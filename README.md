@@ -41,3 +41,19 @@ Technical improvements
 - Added ant buld
 - Shortcircuited all calls to Session.clear
 
+Install ant centos
+=====================
+- wget http://archive.apache.org/dist/ant/binaries/apache-ant-1.9.1-bin.tar.gz
+- tar -zxvf apache-ant-1.9.1-bin.tar.gz
+- sudo mv apache-ant-1.9.1 /usr/local
+- export ANT_HOME=/usr/local/apache-ant-1.9.1
+- export PATH=${ANT_HOME}/bin:${PATH}
+- source ~/.bashrc
+- source ~/.bash_profile
+- sudo ant -version
+
+Report code
+======================
+- \openelis\src\us\mn\state\health\lims\reports\action\implementation\HaitiPatientReport.java ->   reportAnalysisResults() 
+- \openelis\src\us\mn\state\health\lims\reports\action\implementation\PatientHaitiClinical.java
+- \openelis\WebContent\WEB-INF\reports\PatientReportHaitiClinical.jrxml

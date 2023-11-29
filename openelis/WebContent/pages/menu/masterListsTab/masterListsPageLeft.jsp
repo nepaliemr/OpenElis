@@ -429,6 +429,11 @@
     <bean:message key="unifiedSystemUser.browser.title" />
   </html:link>
 </li>
+<li>
+  <html:link action="/MethodMenu">
+  <bean:message key="method.browse.title" />
+</html:link>
+</li>
 <%} %>
 
 </ul>

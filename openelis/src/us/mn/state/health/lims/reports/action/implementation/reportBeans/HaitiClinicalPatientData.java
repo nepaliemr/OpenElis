@@ -69,6 +69,15 @@ public class HaitiClinicalPatientData {
     private String primaryRelative;
     private String resultType;
     private boolean abnormal;
+	private String methodName;
+
+	public String getMethodName() {
+		return methodName;
+	}
+
+	public void setMethodName(String methodName) {
+		this.methodName = methodName;
+	}
 
     public String getReferralRefRange() {
         return referralRefRange;

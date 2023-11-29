@@ -130,6 +130,10 @@ function getNextSortOrder() {
       		<html:text name="<%=formName%>" property="isActive" size="1" onblur="this.value=this.value.toUpperCase()"/>
       	</td>
       </tr>
+      
+ 
+
+
     <tr>
         <td class="label">
             <bean:message key="test.unitOfMeasure"/>:</span>
@@ -140,6 +144,18 @@ function getNextSortOrder() {
                 <html:optionsCollection name="<%=formName%>" property="unitOfMeasureList" label="unitOfMeasureName" value="id" />
             </html:select>
         </td>
+    </tr>
+
+    <tr>
+      <td class="label">
+        <bean:message key="test.methodName"/>:</span>
+      </td>
+      <td width="1">
+        <html:select name="<%=formName%>" property="methodName">
+          <html:option value=""/>
+          <html:optionsCollection name="<%=formName%>" property="testMethodList" label="methodName" value="methodName" />
+        </html:select>
+      </td>
     </tr>
     <tr>
         <td class="label">

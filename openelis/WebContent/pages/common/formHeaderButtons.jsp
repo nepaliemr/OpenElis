@@ -19,7 +19,7 @@
 	<logic:empty
 		name="<%=IActionConstants.PAGE_SUBTITLE_KEY%>">
 		<% if (request.getParameter("ID") == null || request.getParameter("ID").equals("0")) { %>
-		  <bean:message key="default.add.title" />
+		  <bean:message key="default.add.title" />okay
 		<% } else { %>
 		  <bean:message key="default.edit.title" />
 		<%}%>

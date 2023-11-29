@@ -25,15 +25,18 @@ import us.mn.state.health.lims.address.valueholder.AddressPart;
 import us.mn.state.health.lims.address.valueholder.PersonAddress;
 import us.mn.state.health.lims.analysis.valueholder.Analysis;
 import us.mn.state.health.lims.common.action.BaseActionForm;
+import us.mn.state.health.lims.common.exception.LIMSRuntimeException;
 import us.mn.state.health.lims.common.services.SampleService;
 import us.mn.state.health.lims.common.services.TestIdentityService;
 import us.mn.state.health.lims.common.util.ConfigurationProperties;
 import us.mn.state.health.lims.common.util.ConfigurationProperties.Property;
 import us.mn.state.health.lims.common.util.DateUtil;
 import us.mn.state.health.lims.common.util.StringUtil;
+import us.mn.state.health.lims.dashboard.valueholder.Order;
 import us.mn.state.health.lims.dictionary.dao.DictionaryDAO;
 import us.mn.state.health.lims.dictionary.daoimpl.DictionaryDAOImpl;
 import us.mn.state.health.lims.dictionary.valueholder.Dictionary;
+import us.mn.state.health.lims.hibernate.HibernateUtil;
 import us.mn.state.health.lims.laborder.dao.LabOrderTypeDAO;
 import us.mn.state.health.lims.laborder.daoimpl.LabOrderTypeDAOImpl;
 import us.mn.state.health.lims.laborder.valueholder.LabOrderType;
@@ -95,12 +98,19 @@ import us.mn.state.health.lims.test.daoimpl.TestDAOImpl;
 import us.mn.state.health.lims.test.valueholder.Test;
 
 import java.lang.reflect.InvocationTargetException;
+import java.sql.Connection;
 import java.sql.Date;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.logging.Logger;
 
 public abstract class HaitiPatientReport extends Report {
 
+    // private final Logger logger = Logger.getLogger(this.getClass());
     private static final String RESULT_REFERENCE_TABLE_ID = NoteUtil.getTableReferenceId("RESULT");
     private static final DecimalFormat twoDecimalFormat = new DecimalFormat("#.##");
     protected static final String REFERRAL_STATUS_ID = StatusOfSampleUtil.getStatusID(AnalysisStatus.ReferedOut);
@@ -359,6 +369,7 @@ public abstract class HaitiPatientReport extends Report {
                 Person person = currentProvider.getPerson();
 
                 if (person.getId() != null) {
+                    // buffer.append(person.getLastName());
                     buffer.append(person.getLastName());
                     buffer.append(", ");
                     buffer.append(person.getFirstName());
@@ -493,7 +504,8 @@ public abstract class HaitiPatientReport extends Report {
         data.setTestSection(reportAnalysis.getTestSection().getLocalizedName());
         data.setTestSortOrder(GenericValidator.isBlankOrNull(test.getSortOrder()) ? Integer.MAX_VALUE : Integer.parseInt(test.getSortOrder()));
         data.setSectionSortOrder(test.getTestSection().getSortOrderInt());
-
+        System.err.print ("Test SORT"+ test.getName()+" - " +test.getSortOrder());
+ 
         if (StatusOfSampleUtil.getStatusID(AnalysisStatus.Canceled).equals(reportAnalysis.getStatusId())) {
             data.setResult(StringUtil.getMessageForKey("report.test.status.canceled"));
         } else if (REFERRAL_STATUS_ID.equals(reportAnalysis.getStatusId())) {
@@ -514,12 +526,13 @@ public abstract class HaitiPatientReport extends Report {
 
             Result result = resultList.get(0);
             setNormalRange(data, test, result);
-            data.setResult(getAugmentedResult(data, result));
+            data.setResult(getAugmentedResult(data, result) );
+            data.setMethodName(test.getMethodName());
             data.setFinishDate(reportAnalysis.getCompletedDateForDisplay());
             data.setNote(getResultNote(result));
             Referral referral = referralDao.getReferralByAnalysisId(reportAnalysis.getId());
             String imbed = referral == null? null : "R";
-            data.setAlerts(getResultFlag(result, imbed));
+            data.setAlerts(getResultFlag(result, imbed)); 
         }
 
         if(resultList.size() > 0){
@@ -744,14 +757,16 @@ public abstract class HaitiPatientReport extends Report {
     protected HaitiClinicalPatientData reportAnalysisResults() {
         HaitiClinicalPatientData data = new HaitiClinicalPatientData();
         String testName = null;
+        String methodName = null;
         String sortOrder = "";
 
         boolean doAnalysis = reportAnalysis != null;
 
         if (doAnalysis) {
             testName = getTestName();
-        }
+            methodName = getMethodName();
 
+        } 
         data.setContactInfo(currentContactInfo);
         data.setSiteInfo(currentSiteInfo);
         data.setReceivedDate(reportSample.getReceivedDateForDisplay());
@@ -762,11 +777,12 @@ public abstract class HaitiPatientReport extends Report {
         setPatientName(data);
         data.setDept(patientDept);
         data.setCommune(patientCommune);
-        data.setStNumber(getLazyPatientIdentity(STNumber, ST_NUMBER_IDENTITY_TYPE_ID));
+        data.setStNumber(getLazyPatientIdentity(STNumber, ST_NUMBER_IDENTITY_TYPE_ID)); 
         data.setPrimaryRelative(getLazyPatientIdentity(null, PRIMARYRELATIVE_IDENTITY_TYPE_ID));
         data.setSubjectNumber(getLazyPatientIdentity(subjectNumber, SUBJECT_NUMBER_IDENTITY_TYPE_ID));
         data.setHealthRegion(getLazyPatientIdentity(healthRegion, HEALTH_REGION_IDENTITY_TYPE_ID));
         data.setHealthDistrict(getLazyPatientIdentity(healthDistrict, HEALTH_DISTRICT_IDENTITY_TYPE_ID));
+        data.setMethodName(methodName);
         data.setTestName(testName);
         if (currentProvider != null) {
             data.setPatientSiteNumber(currentProvider.getExternalId());
@@ -797,15 +813,121 @@ public abstract class HaitiPatientReport extends Report {
         String testName;
 
         if (useReportingDescription()) {
-            testName = reportAnalysis.getTest().getReportingDescription();
+            testName = reportAnalysis.getTest().getReportingDescription() + getMethodName(reportAnalysis.getTest().getId()) ;
         } else {
-            testName = reportAnalysis.getTest().getTestName();
+            testName = reportAnalysis.getTest().getTestName()  + getMethodName(reportAnalysis.getTest().getId())  ;
         }
 
         if (GenericValidator.isBlankOrNull(testName)) {
-            testName = reportAnalysis.getTest().getTestName();
+            testName = reportAnalysis.getTest().getTestName()  + getMethodName(reportAnalysis.getTest().getId())  ;
         }
         return testName;
+    }
+ private PreparedStatement getPreparedStatement(String sqlForAllTestsToday) throws SQLException {
+        Connection connection = HibernateUtil.getSession().connection();
+        return connection.prepareStatement(sqlForAllTestsToday);
+    }
+    private void closePreparedStatement(PreparedStatement preparedStatement) {
+        if (preparedStatement != null) {
+            try {
+                preparedStatement.close();
+            } catch (SQLException e) {
+               throw new LIMSRuntimeException(e);
+            }
+        }
+    }
+
+    private void closeResultSet(ResultSet pendingAccessions) {
+        if (pendingAccessions != null) {
+            try {
+                pendingAccessions.close();
+            } catch (SQLException e) {
+                throw new LIMSRuntimeException(e);
+            }
+        }
+    }
+
+    private String getMethodName( ) {   
+        String test_id="0";
+        if (useReportingDescription()) {
+            test_id = reportAnalysis.getTest().getId()  ;
+        } else {
+            test_id = reportAnalysis.getTest().getId()   ;
+        }
+
+        if (GenericValidator.isBlankOrNull(test_id)) {
+            test_id = reportAnalysis.getTest().getId()  ;
+        }
+
+
+        String QUERY = "select method.name as name from test left join  method  on test.method_id = method.id where  test.id=" +test_id+";";        
+        System.err.println(QUERY);
+        ResultSet pendingAccessions = null;
+        String methodName="";
+        PreparedStatement preparedStatement = null;
+        try {
+        //Dont'use current_date in prepared_statement. I know its weird, but
+        //The session fires query with current_date = date_on_which_session_was_created and gives wron result on next daypreparedStatement.setTimestamp(1, DateUtil.getTodayAsTimestamp());
+        preparedStatement = getPreparedStatement(QUERY);
+        // preparedStatement.setTimestamp(1, DateUtil.getTodayAsTimestamp());
+        pendingAccessions = preparedStatement.executeQuery();
+        while (pendingAccessions.next()) {
+            // Order order = createOrder(pendingAccessions, false);
+            // orderList.add(order);
+            methodName=pendingAccessions.getString("name");
+            System.err.println(methodName);
+            System.err.println(pendingAccessions);
+              if (GenericValidator.isBlankOrNull(methodName)) {
+            return "";  
+            }
+            return " ["+methodName+"]";
+        }
+            return "";
+        } catch (SQLException e) {
+            // logger.error("Error closing resultSet", e);
+            // throw new LIMSRuntimeException(e);
+        return "";
+        } finally {
+            closeResultSet(pendingAccessions);
+            closePreparedStatement(preparedStatement);
+        }
+    }
+
+
+
+    private String getMethodName( String test_id) {   
+        
+        String QUERY = "select method.name as name from test left join  method  on test.method_id = method.id where  test.id=" +test_id+";";        
+        System.err.println(QUERY);
+        ResultSet pendingAccessions = null;
+        String methodName="";
+        PreparedStatement preparedStatement = null;
+        try {
+        //Dont'use current_date in prepared_statement. I know its weird, but
+        //The session fires query with current_date = date_on_which_session_was_created and gives wron result on next daypreparedStatement.setTimestamp(1, DateUtil.getTodayAsTimestamp());
+        preparedStatement = getPreparedStatement(QUERY);
+        // preparedStatement.setTimestamp(1, DateUtil.getTodayAsTimestamp());
+        pendingAccessions = preparedStatement.executeQuery();
+        while (pendingAccessions.next()) {
+            // Order order = createOrder(pendingAccessions, false);
+            // orderList.add(order);
+            methodName=pendingAccessions.getString("name");
+            System.err.println(methodName);
+            System.err.println(pendingAccessions);
+              if (GenericValidator.isBlankOrNull(methodName)) {
+            return "";  
+            }
+            return " ["+methodName+"]";
+        }
+            return "";
+        } catch (SQLException e) {
+            // logger.error("Error closing resultSet", e);
+            // throw new LIMSRuntimeException(e);
+        return "";
+        } finally {
+            closeResultSet(pendingAccessions);
+            closePreparedStatement(preparedStatement);
+        }
     }
 
 

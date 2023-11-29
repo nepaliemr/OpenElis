@@ -77,8 +77,9 @@ public class PatientHaitiClinical extends HaitiPatientReport implements IReportC
 			// case if there was a confirmation sample with no test specified
 			if (analysis.getTest() != null) {
 				reportAnalysis = analysis;
-				HaitiClinicalPatientData resultsData = reportAnalysisResults();
+				HaitiClinicalPatientData resultsData = reportAnalysisResults(); 
 				reportItems.add(resultsData);
+
 			}
 		}
 	}
