@@ -2,7 +2,7 @@ Liquibase is a tool for managing the versioning of databases.  For more informat
 
 This tool can be run from this directory using the following commands.
 
-java -jar .\lib\liquibase-1.9.5.jar --url=jdbc:postgresql://localhost:5432/cdielis --logLevel=warning --defaultsFile=liquibase.properties  --contexts=CDIRetroCI update
+java -jar .\lib\liquibase-1.9.5.jar --url=jdbc:postgresql://192.168.0.140:5432/cdielis --logLevel=warning --defaultsFile=liquibase.properties  --contexts=CDIRetroCI update
 
 user name, database etc are listed in liquibase.properties file.
 Other contexts include
@@ -10,10 +10,10 @@ Other contexts include
 in the following examples, the names of your databases may be different.
 
 To update a haitiLNSP DB with haitiLNSP context changes use:
-java -jar .\lib\liquibase-1.9.5.jar --contexts=haitiLNSP --url=jdbc:postgresql://localhost:5432/lnsphaiti --logLevel=warning --defaultsFile=liquibase.properties update
+java -jar .\lib\liquibase-1.9.5.jar --contexts=haitiLNSP --url=jdbc:postgresql://192.168.0.140:5432/lnsphaiti --logLevel=warning --defaultsFile=liquibase.properties update
 
 To update a (clinical) haiti which is typically named clinlims in our development environments with all haiti context changes use:
-java -jar .\lib\liquibase-1.9.5.jar --contexts=haiti --url=jdbc:postgresql://localhost:5432/clinlims --logLevel=warning --defaultsFile=liquibase.properties update
+java -jar .\lib\liquibase-1.9.5.jar --contexts=haiti --url=jdbc:postgresql://192.168.0.140:5432/clinlims --logLevel=warning --defaultsFile=liquibase.properties update
 
 
 1.9.5 notes

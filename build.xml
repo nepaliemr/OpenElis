@@ -114,7 +114,7 @@
     <target name="updateHaitiDB">
         <echo message="Running migration for contexts : Haiti"/>
         <exec executable="java" failonerror="true" dir="${liquibase}">
-            <arg line="-jar -Dfile.encoding=utf-8 lib/liquibase-1.9.5.jar --changeLogFile=./changeLogs.xml --defaultsFile=liquibase.properties --contexts=haiti --url=jdbc:postgresql://localhost:5432/clinlims update"/>
+            <arg line="-jar -Dfile.encoding=utf-8 lib/liquibase-1.9.5.jar --changeLogFile=./changeLogs.xml --defaultsFile=liquibase.properties --contexts=haiti --url=jdbc:postgresql://192.168.0.140:5432/clinlims update"/>
         </exec>
     </target>
 
@@ -164,7 +164,7 @@
     <target name="updateDB">
         <echo message="Running migration for contexts : Bahmni"/>
         <exec executable="java" failonerror="true" dir="${liquibase}">
-            <arg line="-jar -Dfile.encoding=utf-8 lib/liquibase-1.9.5.jar --defaultsFile=liquibase.properties --contexts=bahmni --url=jdbc:postgresql://localhost:5432/clinlims  --logLevel=warning update"/>
+            <arg line="-jar -Dfile.encoding=utf-8 lib/liquibase-1.9.5.jar --defaultsFile=liquibase.properties --contexts=bahmni --url=jdbc:postgresql://192.168.0.140:5432/clinlims  --logLevel=warning update"/>
         </exec>
     </target>
 

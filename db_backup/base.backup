@@ -10058,7 +10058,7 @@ COPY report_chart (chart_id, name, description, chart_query, chart_type, width, 
 
 COPY report_datasource (datasource_id, name, driver, url, username, password, max_idle, max_active, max_wait, validation_query, jndi) FROM stdin;
 41	jdbc/OracleDS	oracle.jdbc.driver.OracleDriver	jdbc:oracle:thin:@wstdb01.health.state.mn.us:1521:phltst	CLINLIMS	E1i$Lab$	0	0	0	\N	f
-1065	postgres	org.postgresql.Driver	jdbc:postgresql://localhost:5432/clinlims	clinlims	hLriKGUkNzdj	0	0	0	\N	f
+1065	postgres	org.postgresql.Driver	jdbc:postgresql://192.168.0.140:5432/clinlims	clinlims	hLriKGUkNzdj	0	0	0	\N	f
 \.
 
 

@@ -135,31 +135,31 @@
     <target name="updateDB" description="Installs changes to DB using liquibase" depends="checkoutDB">
         <echo message="Updating CDIOpenElis database"/>
         <exec executable="java" dir="${db_root}">
-            <arg line="-jar  ./lib/liquibase-1.9.5.jar --defaultsFile=./liquibase.properties  --contexts=CDIRetroCI --password=... --url=jdbc:postgresql://localhost:5432/cdielis update"/>
+            <arg line="-jar  ./lib/liquibase-1.9.5.jar --defaultsFile=./liquibase.properties  --contexts=CDIRetroCI --password=... --url=jdbc:postgresql://192.168.0.140:5432/cdielis update"/>
         </exec>
         <echo message="Updating CDIOpenElisTraining database"/>
         <exec executable="java" dir="${db_root}">
-            <arg line="-jar  ./lib/liquibase-1.9.5.jar --defaultsFile=./liquibase.properties --contexts=CDIRetroCI  --password=... --url=jdbc:postgresql://localhost:5432/trainingcdielis update"/>
+            <arg line="-jar  ./lib/liquibase-1.9.5.jar --defaultsFile=./liquibase.properties --contexts=CDIRetroCI  --password=... --url=jdbc:postgresql://192.168.0.140:5432/trainingcdielis update"/>
         </exec>
         <echo message="Updating haitiOpenELIS database"/>
         <exec executable="java" dir="${db_root}">
-            <arg line="-jar  ./lib/liquibase-1.9.5.jar --defaultsFile=./liquibase.properties --contexts=haiti --password=... --url=jdbc:postgresql://localhost:5432/clinlims update"/>
+            <arg line="-jar  ./lib/liquibase-1.9.5.jar --defaultsFile=./liquibase.properties --contexts=haiti --password=... --url=jdbc:postgresql://192.168.0.140:5432/clinlims update"/>
         </exec>
         <echo message="Updating LNSP_HaitiOpenElis database"/>
         <exec executable="java" dir="${db_root}">
-            <arg line="-jar  ./lib/liquibase-1.9.5.jar --defaultsFile=./liquibase.properties  --contexts=haitiLNSP --password=... --url=jdbc:postgresql://localhost:5432/lnsphaiti update"/>
+            <arg line="-jar  ./lib/liquibase-1.9.5.jar --defaultsFile=./liquibase.properties  --contexts=haitiLNSP --password=... --url=jdbc:postgresql://192.168.0.140:5432/lnsphaiti update"/>
         </exec>
         <echo message="Updating CI_LNSPOpenElis database"/>
         <exec executable="java" dir="${db_root}">
-            <arg line="-jar  ./lib/liquibase-1.9.5.jar --defaultsFile=./liquibase.properties  --contexts=ciLNSP --password=... --url=jdbc:postgresql://localhost:5432/cilnsp update"/>
+            <arg line="-jar  ./lib/liquibase-1.9.5.jar --defaultsFile=./liquibase.properties  --contexts=ciLNSP --password=... --url=jdbc:postgresql://192.168.0.140:5432/cilnsp update"/>
         </exec>
         <echo message="Updating CI_IPCIOpenElis database"/>
         <exec executable="java" dir="${db_root}">
-            <arg line="-jar  ./lib/liquibase-1.9.5.jar --defaultsFile=./liquibase.properties  --contexts=CI_IPCI --password=... --url=jdbc:postgresql://localhost:5432/ci_ipci update"/>
+            <arg line="-jar  ./lib/liquibase-1.9.5.jar --defaultsFile=./liquibase.properties  --contexts=CI_IPCI --password=... --url=jdbc:postgresql://192.168.0.140:5432/ci_ipci update"/>
         </exec>
         <echo message="Updating CDI_RegLabOpenElis database"/>
         <exec executable="java" dir="${db_root}">
-            <arg line="-jar  ./lib/liquibase-1.9.5.jar --defaultsFile=./liquibase.properties  --contexts=ci_regional --password=... --url=jdbc:postgresql://localhost:5432/ci_reg_lab update"/>
+            <arg line="-jar  ./lib/liquibase-1.9.5.jar --defaultsFile=./liquibase.properties  --contexts=ci_regional --password=... --url=jdbc:postgresql://192.168.0.140:5432/ci_reg_lab update"/>
         </exec>
     </target>
     <target name="clean">
