@@ -37,7 +37,10 @@ function order(div, orderArray, generateLink, getColumns, alwaysValidate) {
 function generateLinkForPrint(order){
     var printMessage = jQuery("#translatedColumnNames").attr("data-link-print");
     var printIcon = '<img id="actionIcon" src="images/print.svg" title="'+ printMessage +'">';
-    return "<a id='print' target='_blank' href='ReportPrint.do?type=patient&report=patientHaitiClinical&accessionDirect="+ order.accessionNumber +"&patientNumberDirect=" + order.stNumber + "'>"+printIcon+"</a>";
+    var newprintIcon = '<img id="actionIcon" src="images/print_new.svg" title="'+ printMessage +'">';
+    var old_print = "<a id='print' target='_blank' href='ReportPrint.do?type=patient&report=patientHaitiClinical&accessionDirect="+ order.accessionNumber +"&patientNumberDirect=" + order.stNumber + "'>"+printIcon+"</a>";
+    var new_print = "<a id='New print' target='_blank' href='../labprint/index.php?accessionDirect="+ order.accessionNumber +"&patientNumberDirect=" + order.stNumber + "'>"+newprintIcon+"</a>";
+    return old_print +" | "+ new_print;
 }
 
 
